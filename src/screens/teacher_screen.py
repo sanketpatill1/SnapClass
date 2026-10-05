@@ -51,7 +51,7 @@ def teacher_dashboard():
             st.rerun()
 
 
-    st.space()
+    st.write("")
 
     if "current_teacher_tab" not in st.session_state:
         st.session_state.current_teacher_tab = 'take_attendance'
@@ -126,7 +126,7 @@ def teacher_tab_take_attendance():
 
         for idx, img in enumerate(st.session_state.attendance_images):
             with gallery_cols[idx % 4 ]:
-                st.image(img, width='stretch', caption=f'Photo {idx+1}')
+                st.image(img, use_container_width=True, caption=f'Photo {idx+1}')
     has_photos = bool(st.session_state.attendance_images)
     c1, c2, c3 = st.columns(3)
 
@@ -153,22 +153,20 @@ def teacher_tab_take_attendance():
 
                             all_detected_ids.setdefault(student_id, []).append(f"Photo {idx+1}")
 
-                enrolled_res = supabase.table('subject_students').select("*, students(*)").eq('subject_id',selected_subject_id ).execute()
+                enrolled_res = supabase.table('subject_students').select("*, students(*)").eq('subject_id', selected_subject_id).execute()
                 enrolled_students = enrolled_res.data
+
+                results, attendance_to_log = [], []
 
                 if not enrolled_students:
                     st.warning('No students enrolled in this course')
                 else:
-
-                    results, attendance_to_log  = [], []
-
                     current_timestamp = datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
-
 
                     for node in enrolled_students:
                         student = node['students']
                         sources = all_detected_ids.get(int(student['student_id']), [])
-                        is_present= len(sources) > 0
+                        is_present = len(sources) > 0
 
                         results.append({
                             "Name": student['name'],
@@ -184,7 +182,7 @@ def teacher_tab_take_attendance():
                             'is_present': bool(is_present)
                         })
 
-                attendance_result_dialog(pd.DataFrame(results), attendance_to_log)
+                    attendance_result_dialog(pd.DataFrame(results), attendance_to_log)
 
     with c3:
         if st.button('Use Voice Attendance', type='primary', width='stretch', icon=':material/mic:'):
@@ -204,7 +202,7 @@ def teacher_tab_manage_subjects():
     teacher_id = st.session_state.teacher_data['teacher_id']
     col1, col2 = st.columns(2)
     with col1:
-        st.header('Manage Subjects', width='stretch')
+        st.header('Manage Subjects')
 
     with col2:
         if st.button('Create New Subject', width='stretch'):
@@ -219,18 +217,18 @@ def teacher_tab_manage_subjects():
                 ("🫂", "Students", sub['total_students']),
                 ("🕰️", "Classes", sub['total_classes']),
             ]
-        def share_btn():
-            if st.button(f"Share Code: {sub['name']}", key=f"share_{sub['subject_code']}", icon=":material/share:"):
-                share_subject_dialog(sub['name'], sub['subject_code'])
-            st.space()
+            def share_btn(sub=sub):
+                if st.button(f"Share Code: {sub['name']}", key=f"share_{sub['subject_code']}", icon=":material/share:"):
+                    share_subject_dialog(sub['name'], sub['subject_code'])
+                st.write("")
 
-        subject_card(
-            name = sub['name'],
-            code = sub['subject_code'],
-            section = sub['section'],
-            stats=stats,
-            footer_callback=share_btn
-        )
+            subject_card(
+                name = sub['name'],
+                code = sub['subject_code'],
+                section = sub['section'],
+                stats=stats,
+                footer_callback=share_btn
+            )
     else:
         st.info("NO SUBJECTS FOUND. CREATE ONE ABOVE")
 
@@ -281,7 +279,7 @@ def teacher_tab_attendance_records():
                   [['Time', 'Subject', 'Subject Code', 'Attendance Stats']]
                   )
     
-    st.dataframe(display_df, width='stretch', hide_index=True)
+    st.dataframe(display_df, use_container_width=True, hide_index=True)
 
 
 def login_teacher(username, password):
@@ -308,8 +306,8 @@ def teacher_screen_login():
             st.rerun()
 
     st.header('Login using password', text_alignment='center')
-    st.space()
-    st.space()
+    st.write("")
+    st.write("")
 
 
     teacher_username = st.text_input("Enter username", placeholder='ananyaroy')
@@ -366,8 +364,8 @@ def teacher_screen_register():
 
     st.header('Register your teacher profile')
 
-    st.space()
-    st.space()
+    st.write("")
+    st.write("")
 
     
     teacher_username = st.text_input("Enter username", placeholder='ananyaroy')

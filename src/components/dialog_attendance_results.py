@@ -8,7 +8,7 @@ from src.database.db import create_attendance
 
 def show_attendance_result(df, logs):
     st.write('Please review attendance before confirming.')
-    st.dataframe(df, hide_index=True, width='stretch')
+    st.dataframe(df, hide_index=True, use_container_width=True)
 
     col1, col2 = st.columns(2)
 

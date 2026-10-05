@@ -62,6 +62,9 @@ def get_trained_model():
     try:
         clf.fit(X, y)
     except ValueError:
+        # Only 1 student registered — SVC needs 2+ classes.
+        # predict_attendance already handles the single-student case
+        # without calling clf.predict(), so we return data without fitting.
         pass
 
     return {'clf': clf, 'X':X, "y":y}
